@@ -1,0 +1,105 @@
+# DINO Training Configuration - Optimized for 2x A100 GPUs
+# Based on your specified parameters
+
+# Training
+epochs: 100
+seed: 42
+device: "cuda"
+mixed_precision: true
+gradient_clip: 3.0
+gradient_accumulation_steps: 8
+
+# Logging and checkpointing
+log_interval: 100
+save_interval: 10
+eval_interval: 10
+output_dir: "outputs"
+experiment_name: "dino_optimized"
+
+# Data
+data:
+  data_path: "data/pretrain/train"
+  batch_size: 144  # per GPU
+  num_workers: 12
+  pin_memory: false
+  global_crop_size: 96
+  local_crop_size: 48
+  num_local_crops: 8
+  global_crop_scale: [0.4, 1.0]
+  local_crop_scale: [0.05, 0.4]
+
+# Backbone
+backbone:
+  name: "vit_small"
+  img_size: 96
+  patch_size: 12  # Must divide img_size evenly (96/8=12 patches)
+  drop_rate: 0.1  # drop_path_rate
+  attn_drop_rate: 0.0
+
+# Optimizer
+optimizer:
+  name: "adamw"
+  lr: 0.008
+  weight_decay: 0.04
+  betas: [0.9, 0.95]
+
+# Scheduler
+scheduler:
+  name: "cosine"
+  warmup_epochs: 5
+  min_lr: 0.000001  # 1e-6
+  warmup_start_lr: 0.000001
+
+# DINO method
+dino:
+  # Head architecture
+  out_dim: 65536
+  hidden_dim: 2048
+  bottleneck_dim: 256
+  num_layers: 3
+  use_bn: false
+  norm_last_layer: true
+  
+  # Temperatures (teacher_temp_warmup corresponds to base: 0.04, teacher_temp to final: 0.07)
+  teacher_temp: 0.07  # final temperature
+  student_temp: 0.1
+  teacher_temp_warmup_epochs: 30  # ~15000 iters with your batch size
+  teacher_temp_warmup: 0.04  # base temperature
+  
+  # EMA momentum
+  center_momentum: 0.9
+  ema_momentum_base: 0.996
+  ema_momentum_final: 1.0
+  
+  # Loss weights
+  use_l2g_loss: true
+  l2g_weight: 0.5
+  use_reg_loss: true
+  reg_weight: 0.1
+
+# Evaluation
+eval:
+  enabled: true
+  eval_datasets: ["cub200", "miniimagenet", "sun397"]
+  eval_data_root: "data/eval_public"
+  knn_k: 20
+  knn_temperature: 0.07
+  batch_size: 64
+  num_workers: 4
+
+# Weights & Biases
+wandb:
+  enabled: true
+  project: "ssl-dino"
+  name: null
+  tags: ["dino", "vit-small", "optimized", "ddp"]
+  notes: "Optimized DINO training with larger batch, 8 local crops"
+  log_gradients: false  # Disabled for speed
+  log_freq: 100
+  watch_model: false  # Disabled for speed
+  save_artifacts: true
+
+# Distributed training
+distributed:
+  enabled: false  # Will be enabled via CLI
+  backend: "nccl"

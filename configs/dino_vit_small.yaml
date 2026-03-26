@@ -1,0 +1,88 @@
+# DINO Training Configuration - ViT-Small (8 GPU Setup)
+# Effective batch size: 256 * 8 * 2 = 4096
+
+epochs: 100
+seed: 42
+mixed_precision: true
+gradient_clip: 3.0
+gradient_accumulation_steps: 2
+
+log_interval: 50
+save_interval: 10
+eval_interval: 5
+output_dir: "outputs"
+experiment_name: "dino_vit_small"
+
+data:
+  data_path: "data/pretrain/train"
+  batch_size: 256             # Per GPU
+  num_workers: 12
+  pin_memory: true
+  prefetch_factor: 2
+  global_crop_size: 96
+  local_crop_size: 48
+  num_local_crops: 6
+  global_crop_scale: [0.4, 1.0]
+  local_crop_scale: [0.05, 0.4]
+
+backbone:
+  name: "vit_small"
+  img_size: 96
+  patch_size: 16
+  drop_rate: 0.0
+
+optimizer:
+  name: "adamw"
+  lr: 0.0036                  # Recommended for EBS=4096 (range 0.003-0.004)
+  weight_decay: 0.04
+  betas: [0.9, 0.999]
+
+scheduler:
+  name: "cosine"
+  warmup_epochs: 0
+  warmup_steps: 2000
+  warmup_start_lr: 0.000001   # 1e-6
+  min_lr: 0.000001            # 1e-6
+
+dino:
+  out_dim: 4096
+  hidden_dim: 2048
+  bottleneck_dim: 256
+  num_layers: 3
+  norm_last_layer: true
+  
+  # Teacher temperature schedule
+  teacher_temp: 0.05          # Final teacher temp
+  teacher_temp_warmup: 0.08   # Start teacher temp
+  teacher_temp_warmup_epochs: 30
+
+  student_temp: 0.1
+  
+  center_momentum: 0.95
+
+  # EMA schedule: cosine ramp from 0.90 -> 0.999
+  ema_momentum_base: 0.90
+  ema_momentum_final: 0.999
+
+  use_l2g_loss: true
+  l2g_weight: 0.5
+  use_reg_loss: true
+  reg_weight: 0.1
+
+eval:
+  enabled: true
+  eval_datasets: ["cub200", "miniimagenet", "sun397"]
+  eval_data_root: "data/eval_public"
+  knn_k: 20
+  knn_temperature: 0.07
+  batch_size: 128
+  num_workers: 4
+
+wandb:
+  enabled: true
+  project: "ssl-dino"
+  tags: ["dino", "vit-small", "8gpu"]
+
+distributed:
+  enabled: true
+  backend: "nccl"

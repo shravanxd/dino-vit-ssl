@@ -1,0 +1,78 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Virtual environments
+venv/
+env/
+.venv/
+.env/
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+*.egg
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+
+# Large data files and directories
+data/
+checkpoints/
+logs/
+outputs/
+*.pth
+*.pt
+*.ckpt
+*.h5
+*.hdf5
+*.pkl
+*.pickle
+
+# Image files (large datasets)
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.bmp
+*.tiff
+*.webp
+
+# Archive files
+*.tar
+*.tar.gz
+*.tgz
+*.zip
+*.7z
+*.rar
+
+# HuggingFace cache
+.cache/
+huggingface/
+
+# Model weights
+*.bin
+*.safetensors
+
+# Submissions (may contain large files)
+submissions/
+
+# Raw data directories
+testsets/testset_*/raw_data/
+
+# Temporary files
+*.tmp
+*.temp
+*.log
