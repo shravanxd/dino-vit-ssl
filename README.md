@@ -1,9 +1,9 @@
 # Implementing and Evaluating DINO Self-Supervised Learning with ViT-Base Backbone
 
 **Authors:**
+- Shravan Khunti (ssk10036@nyu.edu)
 - Harshit Bhargava (hb2976@nyu.edu)
 - Mihir Upadhyay (mu2253@nyu.edu)
-- Shravan Khunti (ssk10036@nyu.edu)
 
 ## Abstract
 Self-supervised learning (SSL) has revolutionized computer vision by enabling the learning of rich visual representations without the need for extensive human annotations. In this work, we implement and evaluate DINO (Self-Distillation with No Labels), a simpler yet effective SSL method, using a Vision Transformer (ViT-Base) backbone. We train the model for 144 epochs on the provided training dataset using a multi-crop strategy with high-resolution global and low-resolution local crops. Our experiments demonstrate the effectiveness of the DINO framework, with the model learning robust features as evidenced by k-NN and Linear Probing evaluation on standard benchmarks including CUB-200, MiniImageNet, and SUN397. We analyze the training stability and the impact of hyperparameter choices, specifically focusing on a customized configuration optimized for high-performance GPUs.
